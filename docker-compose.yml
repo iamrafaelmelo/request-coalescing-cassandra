@@ -1,0 +1,82 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: coalescing-api
+    depends_on:
+      - cassandra-1
+      - cassandra-2
+      - cassandra-3
+    environment:
+      CASSANDRA_HOSTS: cassandra-1,cassandra-2,cassandra-3
+    ports:
+      - "8080:8080"
+    networks:
+      - cassandra
+
+  cassandra-1:
+    image: cassandra:5.0
+    container_name: cassandra-1
+    hostname: cassandra-1
+    environment:
+      CASSANDRA_CLUSTER_NAME: coalescing-lab
+      CASSANDRA_DC: dc1
+      CASSANDRA_RACK: rack1
+      CASSANDRA_SEEDS: cassandra-1
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      MAX_HEAP_SIZE: 512M
+      HEAP_NEWSIZE: 100M
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra1_data:/var/lib/cassandra
+    networks:
+      - cassandra
+
+  cassandra-2:
+    image: cassandra:5.0
+    container_name: cassandra-2
+    hostname: cassandra-2
+    environment:
+      CASSANDRA_CLUSTER_NAME: coalescing-lab
+      CASSANDRA_DC: dc1
+      CASSANDRA_RACK: rack2
+      CASSANDRA_SEEDS: cassandra-1
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      MAX_HEAP_SIZE: 512M
+      HEAP_NEWSIZE: 100M
+    depends_on:
+      - cassandra-1
+    volumes:
+      - cassandra2_data:/var/lib/cassandra
+    networks:
+      - cassandra
+
+  cassandra-3:
+    image: cassandra:5.0
+    container_name: cassandra-3
+    hostname: cassandra-3
+    environment:
+      CASSANDRA_CLUSTER_NAME: coalescing-lab
+      CASSANDRA_DC: dc1
+      CASSANDRA_RACK: rack3
+      CASSANDRA_SEEDS: cassandra-1
+      CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+      MAX_HEAP_SIZE: 512M
+      HEAP_NEWSIZE: 100M
+    depends_on:
+      - cassandra-1
+    volumes:
+      - cassandra3_data:/var/lib/cassandra
+    networks:
+      - cassandra
+
+volumes:
+  cassandra1_data:
+  cassandra2_data:
+  cassandra3_data:
+
+networks:
+  cassandra:
+    driver: bridge
