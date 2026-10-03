@@ -6,13 +6,13 @@ A small Go proof of concept for experimenting with **Cassandra, request coalesci
 ## Architecture
 
 ```text
-Load Test
-    │
-    ▼
- Go API
-    │
-    │ singleflight
-    ▼
+   Load Test
+       │
+       ▼
+     Go API
+       │
+       │ singleflight
+       ▼
 Cassandra Cluster
  ┌──────┬──────┐
  ▼      ▼      ▼
