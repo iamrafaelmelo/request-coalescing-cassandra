@@ -30,7 +30,8 @@ services:
     ports:
       - "9042:9042"
     volumes:
-      - cassandra1_data:/var/lib/cassandra
+    - cassandra1_data:/var/lib/cassandra
+    - ./init.cql:/init.cql:ro
     networks:
       - cassandra
 
